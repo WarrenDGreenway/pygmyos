@@ -1,0 +1,242 @@
+/**************************************************************************
+    PygmyOS ( Pygmy Operating System )
+    Copyright (C) 2011-2012  Warren D Greenway
+
+    This file is part of PygmyOS.
+
+    PygmyOS is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    PygmyOS is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with PygmyOS.  If not, see <http://www.gnu.org/licenses/>.
+***************************************************************************/
+
+#pragma once
+
+#include "pygmy_profile.h"
+#include <stdarg.h>
+
+
+
+#define START                       1 // BIT0
+#define CURRENT                     2 // BIT1
+#define END                         4 // BIT2
+            
+#define READ                        BIT0
+#define WRITE                       BIT1
+#define APPEND                      BIT2
+#define MEDIARAM                    BIT2 // Volume Level, covers all memory that allows random read/write access
+#define MEDIAFLASH                  BIT3 // Volume Level, covers flash memory ( write cycle limitations )
+#define HIDDEN                      BIT3 
+#define FOLDER                      BIT4
+#define SYSTEM                      BIT5
+#define BURIED                      BIT6 // Any folder or file that is non-root
+#define EOF                         BIT7
+#define VOLUMEFULL                  BIT7
+#define VOLUMEERROR                 BIT6
+   
+#define TRUE                                1
+#define FALSE                               0
+
+typedef signed long long                    s64;
+//typedef int64_t                             s64;
+typedef signed long                         s32;
+typedef signed short                        s16;
+typedef signed char                         s8;
+
+typedef signed long long const              sc64;
+//typedef signed int64_t const                sc64;
+typedef signed long  const                  sc32;  
+typedef signed short const                  sc16;  
+typedef signed char  const                  sc8;   
+
+typedef volatile signed long long           vs64;
+typedef volatile signed long                vs32;
+typedef volatile signed short               vs16;
+typedef volatile signed char                vs8;
+
+typedef volatile signed long long const     vsc64;
+typedef volatile signed long  const         vsc32; 
+typedef volatile signed short const         vsc16;  
+typedef volatile signed char  const         vsc8;  
+
+typedef unsigned long long                  u64;
+//typedef uint64_t                            u64;
+typedef unsigned long                       u32;
+typedef unsigned short                      u16;
+typedef unsigned char                       u8;
+
+typedef unsigned long long const            uc64;
+typedef unsigned long  const                uc32;  
+typedef unsigned short const                uc16;  
+typedef unsigned char  const                uc8;   
+
+typedef volatile unsigned long long         vu64;
+typedef volatile unsigned long              vu32;
+typedef volatile unsigned short             vu16;
+typedef volatile unsigned char              vu8;
+
+typedef volatile unsigned long long const   vuc64;
+typedef volatile unsigned long  const       vuc32;  
+typedef volatile unsigned short const       vuc16;  
+typedef volatile unsigned char  const       vuc8;   
+
+enum {
+        FLOAT = 1,
+        OCTAL = 8,
+        DECIMAL = 10,
+        HEXADECIMAL = 16,
+        CHARACTER,
+        STRING,
+        TIME,
+        EXPONENT
+        };
+
+enum {
+        NOCASE,
+        LOWERCASE,
+        UPPERCASE,
+        };
+#define LITTLEENDIAN                        0
+#define BIGENDIAN                           1
+
+#define U8_MAX                              ((u8)255)
+#define S8_MAX                              ((s8)127)
+#define S8_MIN                              ((s8)-128)
+#define U16_MAX                             ((u16)65535u)
+#define S16_MAX                             ((s16)32767)
+#define S16_MIN                             ((s16)-32768)
+#define U32_MAX                             ((u32)4294967295uL)
+#define S32_MAX                             ((s32)2147483647)
+#define S32_MIN                             ((s32)2147483648uL)
+
+#define BIT0                                0x00000001
+#define BIT1                                0x00000002
+#define BIT2                                0x00000004
+#define BIT3                                0x00000008
+#define BIT4                                0x00000010
+#define BIT5                                0x00000020
+#define BIT6                                0x00000040
+#define BIT7                                0x00000080
+#define BIT8                                0x00000100
+#define BIT9                                0x00000200
+#define BIT10                               0x00000400
+#define BIT11                               0x00000800
+#define BIT12                               0x00001000
+#define BIT13                               0x00002000
+#define BIT14                               0x00004000
+#define BIT15                               0x00008000
+#define BIT16                               0x00010000
+#define BIT17                               0x00020000
+#define BIT18                               0x00040000
+#define BIT19                               0x00080000
+#define BIT20                               0x00100000
+#define BIT21                               0x00200000
+#define BIT22                               0x00400000
+#define BIT23                               0x00800000
+#define BIT24                               0x01000000
+#define BIT25                               0x02000000
+#define BIT26                               0x04000000
+#define BIT27                               0x08000000
+#define BIT28                               0x10000000
+#define BIT29                               0x20000000
+#define BIT30                               0x40000000
+#define BIT31                               0x80000000
+
+typedef struct {
+                u8  (*GetChar)      ( void *, u64 );
+                u8  (*PutChar)      ( void *, u64, u8 );
+                u16 (*GetWord)      ( void *, u64 );
+                u8  (*PutWord)      ( void *, u64, u16 );
+                u32 (*GetLong)      ( void *, u64 );
+                u8  (*PutLong)      ( void *, u64, u32 );
+                u8  (*GetBuffer)    ( void *, u64, u8*, u32 );
+                u8  (*PutBuffer)    ( void *, u64, u8*, u32 );
+                u8  (*Open)         ( void **, u64, ... );
+                u8  (*VOpen)        ( void **, u64, va_list );
+                u8  (*Close)        ( void ** );
+                u8  (*Desc)         ( void *, void * );
+                u8  (*Status)       ( void * );
+                u8  (*EraseAll)     ( void * );
+                u8  (*EraseSector)  ( void *, u64 );
+                } PYGMYMEMIO;
+
+typedef struct {
+                u32 BaseAddress;
+                u32 EndAddress;
+                u32 Sectors;
+                u32 SectorSize;
+                } STM32MEMORY;
+
+typedef struct {
+                u32 Capacity;       // Sectors x Sector Size
+                u32 Sectors;        // Total number of sectors as defined below
+                u16 SectorSize;     // Smallest erasable size ( generally 256B-4KB )
+                u16 ChunksPerSector;// Number of file entry chunks in a sector
+                u8 Attributes;      // Pygmy File Attributes
+                u8 Manufacturer;    // 1 byte JDEC ID
+                u8 Type;            // JDEC Memory Type
+                } PYGMYMEMDESC;     // Generic Memory Descriptor
+
+typedef struct {
+                u16 Length;
+                u8 Type;
+                u8 *Value;
+                } String;
+
+typedef struct {
+                u8 **Params;   // params that are bounded by whitespace or quotes
+                u8 **Switches; // params that start with - or --
+                u16 ParamCount;
+                u16 SwitchCount;
+                } PYGMYPARAMLIST;
+
+typedef struct {
+                u8 Type;
+                u8 *Name;
+                union {
+                        u8 Char;
+                        u8 *String;
+                        u32 Integer;
+                        float Float;
+                        };
+                } PYGMYVARIANT;
+
+typedef struct {
+                u8 *Key;
+                u8 *Value;
+                } PYGMYDICTIONARYPAIR;
+
+typedef struct {
+                u32 Length;
+                PYGMYDICTIONARYPAIR *KeyAndValue;
+                } PYGMYDICTIONARY;
+
+typedef struct {
+                u8 DataType;
+                u8 Case;
+                u8 RightJustified;
+                u8 Width;
+                u8 Precision;
+                u8 LeftFillChar;
+                u8 RightFillChar;
+                } PYGMYFORMAT;
+
+/*typedef struct {
+                PYGMYFILE File;
+                u32 Status;
+                u32 Timeout;
+                u32 Transaction;
+                u32 Count;
+                u8 Buffer[ 132 ];
+                u8 Index;
+                u8 Port;
+                } PYGMYXMODEM;*/
+
