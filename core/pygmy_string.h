@@ -1,6 +1,6 @@
 /**************************************************************************
     PygmyOS ( Pygmy Operating System )
-    Copyright (C) 2011  Warren D Greenway
+    Copyright (C) 2011-2014  Warren D Greenway
 
     This file is part of PygmyOS.
 
@@ -18,89 +18,130 @@
     along with PygmyOS.  If not, see <http://www.gnu.org/licenses/>.
 ***************************************************************************/
 
-//#pragma once
-#ifndef __PYGMY_HEADER_STRING
-	#define __PYGMY_HEADER_STRING
+#pragma once
+using namespace std;
 
-#include "pygmy_profile.h"      
-      
-#define PUNCT               BIT0
-#define WHITESPACE          BIT1
-#define NEWLINE             BIT2
-#define SEPARATORS          BIT3
-#define QUOTES              BIT4
-#define COMMA               BIT5
-#define ALPHA               BIT6
-#define FILESEPARATORS      BIT7
+#include <string>
+#include <vector>
+#include "pygmy_type.h"
 
-extern const PYGMYPAIR PYGMYNEBULAPINS[];
-//extern const u8 PYGMYBASE64CHARS[];
-//extern const u8 PYGMYHEXCHARS[];
-u8 convertMonthStringToInt( u8 *Month );
-u8 convertStringToState( u8 *State );
-u8* convertStateToString( u8 State );
-u8 *convertPinToString( u8 ucPin );
-u8 convertStringToPin( u8 *ucBuffer );
-u8 convertStringToPort( u8 *Buffer );
-void convertU16ToBuffer( u16 uiData, u8 *ucBuffer, u8 ucEndian );
-void convertU32ToBuffer( u32 ulData, u8 *ucBuffer, u8 ucEndian );
-u16 convertBufferToU16( u8 *ucBuffer, u8 ucEndian );
-u32 convertBufferToU32( u8 *ucBuffer, u8 ucEndian );
-u8 *removeLeadingWhitespace( u8 *ucString );
-u8 isPrintable( u8 ucChar );
-s8 isSeparator( u8 ucChar );
-s8 isMathChar( u8 ucChar );
-s8 isQuoteChar( u8 ucChar );
-s8 isCharInString( u8 ucChar, u8 *ucChars );
-u8 isCharsInString( u8 *Chars, u8 *String );
-s8 isAlpha( u8 ucChar );
-s8 isNumeric( u8 ucChar );
-s8 isAlphaOrNumeric( u8 ucChar );
-s8 isHex( u8 ucChar );
-s8 isBinary( u8 ucChar );
-s8 isOctal( u8 ucChar );
-s8 isWhitespace( u8 ucChar );
-u8 isFileSeparator( u8 ucChar );
-s8 isPunctuation( u8 ucChar );
-u8 isCharSameIgnoreCase( u8 ucChar1, u8 ucChar2 );
-u8 isStringSameIgnoreCase( u8 *ucString1, u8 *ucString2 );
-s8 isStringSame( u8 *ucBuffer, u8 *ucString );
-u16 len( u8 *ucString );
-u8 replaceLastChar( u8 *ucString, u8 ucChar, u8 ucNewChar );
-u8 replaceChars( u8 *ucBuffer, u8 *ucChars, u8 ucChar );
-u8 getLastChar( u8 *String );
-u8 *seekStringInString( u8 *ucString, u8 *ucBuffer );
-u8 *seekStringInStringIgnoreCase( u8 *SeekString, u8 *InString ); 
-void freeParameterList( PYGMYPARAMLIST *Parameters );
-u8 getAllParameters( u8 *Buffer, PYGMYPARAMLIST *Parameters );
-u16 getAllSubStrings( u8 *ucBuffer, u8 *ucStrings[], u16 uiLen, u8 ucMode );
-u8 *getNextSubString( u8 *ucBuffer, u8 ucMode );
-void convertFloatToString( double fData, u8 *ucFormat, u8 *ucBuffer );
-void convertIntToString( s64 ulData, u8 *ucFormat, u8 *ucBuffer );
-void copyString( u8 *ucFrom, u8 *ucTo );
-void copyBuffer( u8 *ucFrom, u8 *ucTo, u16 uiLen );
-u8 *splitString( u8 *ucString, u8 ucChar, s16 sCount );
-u8 *stripLeadingChars( u8 *ucString, u8 *ucChars );
-u8 appendString( u8 *ucFrom, u8 *ucTo );
-u8 convertCharToUpper( u8 ucChar );
-u8 convertCharToLower( u8 ucChar );
-u8 *seekCharInString( u8 ucChar, u8 *ucString );
-u8 *seekCharInStringIgnoreCase( u8 ucChar, u8 *ucString );
-u8 isCharInStringIgnoreCase( u8 ucChar, u8 *ucString );
-u8 convertFormatString( u8 *formatString, PYGMYFORMAT *Format  );
-double convertStringToFloat( u8 *ucBuffer );
-s32 convertStringToInt( u8 *ucBuffer );
-u8 convertCharToInt( u8 ucChar );
-s32 seekStringInBuffer( u8 *ucString, u8 *ucBuffer, u32 ulLen  );
-u16 convertHexEncodedStringToBuffer( u8 *ucString, u8 *ucBuffer );
-u16 convertHexCharToInteger( u8 ucChar );
-u8 getBase64Code( u8 ucChar );
-u16 convertBase64ToBuffer( u8 *ucBufferIn, u8 *ucBufferOut );
-void convertBase64ToString( u8 *ucBuffer, u8 *ucString );
-void convertStringToBase64( u8 *ucString, u8 *ucBase64 );
-u32 convertDateStringToSeconds( u8 *Buffer );
-u32 countCharInString( u8 Char, u8 *String );
-u8* convertModeToString( u8 Mode );
-u8 convertStringToMode( u8 *Mode );
-void convertIntToStringWithFormat( s64 Data, PYGMYFORMAT *Format, u8 *Buffer );
-#endif // __PYGMY_HEADER_STRING
+class PygmyFormat {
+    public:
+        enum{ FLOAT=1, BINARY=2, OCTAL=8, DECIMAL=10, HEXADECIMAL=16, EXPONENT, STRING, CHARACTER, TIME };
+        enum{ NOCASE, UPPERCASE, LOWERCASE };
+        
+        PygmyFormat( ){
+            dataType = DECIMAL;
+            width = 0;
+            precision = 0;
+            rightJustified = false;
+            stringCase = NOCASE;
+            leftFillChar = ' ';
+            rightFillChar = ' ';
+        }
+
+        short dataType; 
+        short width;
+        short precision;
+        short stringCase;
+        bool rightJustified;
+        char leftFillChar;
+        char rightFillChar;
+}; 
+
+
+class PygmyString : public std::string {
+    public:
+        enum Delimiters { FileSeparators=1, Punctuation, Separators, Quotes, Comma, Whitespace, Newline, Alpha};
+        enum PinStates{ None, In, Out, Analog, Pullup, Pulldown, Alt };
+
+    
+        PygmyString( ) : std::string( ) {}
+        PygmyString( std::string& s ) : std::string( s ) {}
+        PygmyString(const char *s) : std::string( s ) {}
+        PygmyString( std::string& s, int pos, int len ) : std::string( s, pos, len ){}
+        PygmyString( PygmyString& s, int pos, int len ) : std::string( s, pos, len ){}
+        PygmyString( const PygmyString& s, int pos, int len ) : std::string( s, pos, len ){}
+
+        //using std::string::operator <<;
+        using std::string::operator +=;
+        using std::string::operator =;
+        using std::string::operator [];
+        //using std::string::back ;
+        
+
+        int convertBase64ToBuffer( char * );
+        int convertHexEncodedStringToBuffer( unsigned short * );
+        short convertBase64ToCode( char );
+        double convertStringToFloat( void );
+        int convertCharToInt( char );
+        int convertHexCharToInteger( char );
+        PygmyString convertFloatToString( double, const char * );
+        PygmyString convertFloatToString( double, PygmyString& );
+        PygmyString convertIntToStringWithFormat( long long , PygmyFormat& );
+        PygmyString convertIntToString( long long, const char * );
+        PygmyString convertIntToString( long long, PygmyString& );
+        long convertStringToInt( void );
+        void convertStringToUpper( void );
+        void convertStringToLower( void );
+        short convertStringToMode( void );
+        std::string convertModeToString( short );
+        char convertCharToUpper( char );
+        char convertCharToLower( char );
+        int convertStringToPort( void );
+        PygmyFormat convertToFormat( void );
+        char getLastChar( void );
+        int replaceLastOccurrenceOfChar( char, char );
+
+        long countCharInString( char );
+        void stripLeadingChars( const std::string& );
+        void stripLeadingChars( std::string& );
+        void stripLeadingWhitespace( void );
+        void copyBuffer( char *, char *, long );
+        int seekChar( char );
+        int seekCharIgnoreCase( char c );
+        int seekStringIgnoreCase( const char * );
+        int seekStringIgnoreCase( std::string& );
+        int seekString( std::string& );
+        int replaceChars( const char *, char );
+        int replaceChars( std::string&, char );
+        void freeParameterList( PYGMYPARAMLIST *Parameters );
+        bool getAllParameters( PYGMYPARAMLIST *Parameters );
+        std::vector<PygmyString> getAllSubStrings( PygmyString& );
+        std::vector<PygmyString> getAllSubStrings( const char * );
+        std::vector<PygmyString> getAllSubStrings( PygmyString&, bool );
+        PygmyString getNextSubString( short mode );
+        PygmyString getNextSubString( const char * );
+        PygmyString getNextSubString( PygmyString&, bool );
+        bool startsWith( PygmyString& );
+
+        bool areCharsInString( const std::string& );
+        bool areCharsInString( std::string& );
+        bool isCharInString( char );
+        bool isCharInStringIgnoreCase( char );
+        //bool isCharInString( char, std::string& );
+        bool isPrintable( char );
+        bool isAlpha( char );
+        bool isNumeric( char );
+        bool isAlphaOrNumeric( char );
+        bool isHex( char );
+        bool isBinary( char );
+        bool isOctal( char );
+        bool isNewline( char );
+        bool isWhitespace( char );
+        bool isQuote( char );
+        bool isMath( char c );
+        bool isFileSeparator( char );
+        bool isSeparator( char );
+        bool isPunctuation( char );
+        bool isCharSameIgnoreCase( char, char );
+        bool areStringsSame( std::string& );
+        bool areStringsSameIgnoreCase( std::string& );
+       
+        const static char *HEXCHARS;
+        const static char *BASE64CHARS;
+};
+
+//const char *PygmyString::HEXCHARS = "0123456789ABCDEF";
+
+//const static char *PygmyString::BASE64CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";

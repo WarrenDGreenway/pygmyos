@@ -18,52 +18,36 @@
     along with PygmyOS.  If not, see <http://www.gnu.org/licenses/>.
 ***************************************************************************/
 
-using namespace std;
+#pragma once
 
-class Uart{
+class Pin{
     public:
-        Uart();
-    private:
-        // physical resources
-        u8 pinTX;
-        u8 pinRX;
-        u8 pinCTS;
-        u8 pinRTS;
-        u8 pinDTR;
-        // UART settings
-        u32 Baud;
-        u8 FlowControl;
-        u8 SoftMode; // software uart mode
-        // FIFO resources
-        u16 RXBufferLen;
-        u16 RXIndex;
-        u16 RXLen;
-        u16 TXBufferLen;
-        u16 TXIndex;
-        u16 TXLen;
-        u8 *RXBuffer;
-        u8 *TXBuffer;
-        u8 *ActionChars;
-        // Event driven external functions
-        PYGMYCMDPTR Put;
-        PYGMYCMDPTR Putc;
-        PYGMYVOIDPTR Get;
-        // Pipe and status properties
-        u8 Pipe;
-        u8 CR; 
+        Pin( void );
+        Pin( u16 );
+        Pin( u16, u8 );
+        void set( bool state );
+        bool get( void );
+        u16 analog( void );
+        u16 interrupt( void *handler );
+        void pwm( u32 frequency, u8 dutyCyle );
+    protected:
+        u16 Pin_pin;
+        u8 Pin_mode;
 };
 
-Uart::Uart( u8 pinTX, u8 pinRX, Baud )
-{
-
-}
-
-Uart::Uart( u8 pinTX, u8 pinRX, pinCTS, pinTS, Baud )
-{
-
-}
-
-
-
-
-
+class PWMChannel: public Pin{
+    public:
+        PWMChannel( u16, u32, u8 );
+        void setDutyCycle( u32 );
+        void setFrequency( u32 );
+        u8 getDutyCycle( void );
+        u32 getFrequency( void );
+    protected:
+        //Pin Pin_pin;
+        u32 Pin_frequency;
+        u32 upCount;
+        u32 downCount;
+        u32 count;
+        u8 Pin_dutyCycle;
+        u8 CR;
+};

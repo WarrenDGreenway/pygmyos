@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "pygmy_profile.h"
+//#include "pygmy_profile.h"
 #include <stdarg.h>
 
 #ifndef NULL
@@ -40,7 +40,7 @@
 #define FOLDER                      BIT4
 #define SYSTEM                      BIT5
 #define BURIED                      BIT6 // Any folder or file that is non-root
-#define EOF                         BIT7
+//#define EOF                         BIT7
 #define VOLUMEFULL                  BIT7
 #define VOLUMEERROR                 BIT6
    
@@ -90,10 +90,14 @@ typedef volatile unsigned long  const       vuc32;
 typedef volatile unsigned short const       vuc16;  
 typedef volatile unsigned char  const       vuc8;   
 
+
 typedef u8 ( *PYGMYFUNCPTR )( void );
 typedef void ( *PYGMYVOIDPTR )( void );
 typedef void ( *PYGMYEVENTFUNC ) ( void );
+typedef void ( *PYGMYHANDLER ) ( void *);
 typedef u8 ( *PYGMYCMDPTR )( u8 *ucParams );
+typedef void ( *PYGMY_RXHANDLERPTR ) ( char );
+typedef u8 ( *PYGMY_TXHANDLERPTR )( void );
 
 enum {
         FLOAT = 1,
@@ -167,10 +171,10 @@ typedef struct {
                 //s8 UMT;
                 } PYGMYTIME;
 
-typedef struct {
+/*typedef struct {
                 u8 *Name;
                 PYGMYCMDPTR Call;
-                } PYGMYCMD; 
+                } PYGMYCMD; */
 
 typedef struct {
                 u8 Status;
